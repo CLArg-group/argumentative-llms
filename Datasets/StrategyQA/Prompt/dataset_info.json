@@ -1,0 +1,70 @@
+{
+  "builder_name": "csv",
+  "citation": "",
+  "config_name": "default",
+  "dataset_name": "csv",
+  "dataset_size": 108181,
+  "description": "",
+  "download_checksums": {
+    "/vol/bitbucket/clarg/argumentative-llm/deniz/temp.csv": {
+      "num_bytes": 105268,
+      "checksum": null
+    }
+  },
+  "download_size": 105268,
+  "features": {
+    "Unnamed: 0": {
+      "dtype": "int64",
+      "_type": "Value"
+    },
+    "qid": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "term": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "description": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "question": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "valid": {
+      "dtype": "bool",
+      "_type": "Value"
+    },
+    "facts": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "decomposition": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "claim": {
+      "dtype": "string",
+      "_type": "Value"
+    }
+  },
+  "homepage": "",
+  "license": "",
+  "size_in_bytes": 213449,
+  "splits": {
+    "train": {
+      "name": "train",
+      "num_bytes": 108181,
+      "num_examples": 200,
+      "dataset_name": "csv"
+    }
+  },
+  "version": {
+    "version_str": "0.0.0",
+    "major": 0,
+    "minor": 0,
+    "patch": 0
+  }
+}

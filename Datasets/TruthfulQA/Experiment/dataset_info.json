@@ -1,0 +1,20 @@
+{
+  "citation": "",
+  "description": "",
+  "features": {
+    "claim": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "original_question_answer": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "valid": {
+      "dtype": "int64",
+      "_type": "Value"
+    }
+  },
+  "homepage": "",
+  "license": ""
+}
