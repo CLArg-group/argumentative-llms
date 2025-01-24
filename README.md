@@ -4,7 +4,6 @@ This is the oficial code repository for the paper "[Argumentative Large Language
 ## Getting Started
 To run the main experiments, please follow these steps:
 1. Install the required dependencies in requirements.txt. Note that, depending on the versions of HuggingFace models you use, you may need to update the `transformers` library to a more recent version.
-1. Download the datasets using the link in the paper, placing them in the `Datasets` folder in the repository root.
 1. Run experiments using the `python3 main.py <OPTIONS>` command. For the list of available options, please run `python3 main.py -h`
 
 ## Reproducibility Information
