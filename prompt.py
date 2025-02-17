@@ -15,7 +15,7 @@ def baseline_formatter(response):
 
 class BaselinePrompts:
     @staticmethod
-    def chatgpt(statement, direct=False, **_):
+    def deniz(statement, direct=False, **_):
         if not direct:
             constraints = {
                 "constraint_prefix": "Let's think step by step.",
@@ -81,7 +81,7 @@ class BaselinePrompts:
         return instructions, constraints, baseline_formatter
 
     @staticmethod
-    def opro(statement, direct=False, **_):
+    def gabriel(statement, direct=False, **_):
         if not direct:
             constraints = {
                 "constraint_prefix": "Let's think step by step.",
@@ -108,7 +108,7 @@ Now take a deep breath, think step by step and determine whether the statement i
 
 class ArgumentMiningPrompts:
     @staticmethod
-    def chatgpt(statement, support=False, **_):
+    def deniz(statement, support=False, **_):
         def formatter(argument, prompt):
             if "N/A" in argument or "n/a" in argument:
                 return "N/A"
@@ -159,7 +159,7 @@ class ArgumentMiningPrompts:
         )
 
     @staticmethod
-    def opro(statement, support=False, **_):
+    def gabriel(statement, support=False, **_):
         def formatter(argument, prompt):
             if "N/A" in argument or "n/a" in argument:
                 return "N/A"
@@ -173,11 +173,28 @@ class ArgumentMiningPrompts:
             {},
             formatter,
         )
+    @staticmethod
+    def new_sup_att(statement, support=False, **_):
+        """ ISO Contribution: New prompting for generating supporting and attacking arguments. Fixes the
+        issue mentioned in the report by conditioning the N/A statement on if it is supporting or attacking"""
+        def formatter(argument, prompt):
+            if "N/A" in argument or "n/a" in argument:
+                return "N/A"
+            return argument
+
+        return (
+            f"""Please provide a single short argument {"supporting" if support else "attacking"} the following claim. Construct the argument so it refers to the truthfulness of the claim. Only provide an argument if you think there is a valid and convincing {"support" if support else "attack"} for this claim (there is a non zero probability that this claim is {"true" if support else "false"}), otherwise return: N/A.
+        Claim: {statement}
+        Now take a deep breath and come up with an argument.
+        Argument:""",
+            {},
+            formatter,
+        )
 
 
 class UncertaintyEvaluatorPrompts:
     @staticmethod
-    def chatgpt(statement, verbal=False, **_):
+    def deniz(statement, verbal=False, **_):
         if verbal:
             certainty_dict = {
                 "certain": 0.95,
@@ -318,9 +335,19 @@ class UncertaintyEvaluatorPrompts:
             )
 
         def formatter(output):
-            likelihood = output.replace("Likelihood:", "").replace("%", "").strip()
-            likelihood = likelihood.split("\n")[0]
-            return int(likelihood) / 100
+            try:
+                likelihood = output.replace("Likelihood:", "").strip()
+                likelihood = likelihood.replace("is", "").strip()
+                likelihood = likelihood.replace("%", "").strip()
+                likelihood = likelihood.replace(".", "").strip()
+                likelihood = likelihood.split("\n")[0]
+                return int(likelihood) / 100
+            except ValueError:
+                print(
+                    "WARNING: Could not parse likelihood, returning 0.5. Offending output:",
+                    output,
+                )
+                return 0.5
 
         constraints = {
             "constraint_prefix": "Likelihood:",
@@ -364,7 +391,7 @@ class UncertaintyEvaluatorPrompts:
         )
 
     @staticmethod
-    def opro(statement, verbal=False, support=False, claim=None, topic=False):
+    def gabriel(statement, verbal=False, support=False, claim=None, topic=False):
         if verbal:
 
             def formatter(output):

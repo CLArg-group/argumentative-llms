@@ -10,7 +10,16 @@ import Uncertainpy.src.uncertainpy.gradual as grad
 from argument_miner import ArgumentMiner
 from uncertainty_estimator import UncertaintyEstimator
 from llm_managers import HuggingFaceLlmManager, OpenAiLlmManager
+
+import transformers
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+from lm_polygraph.utils.model import WhiteboxModel
+from lm_polygraph.utils.model import BlackboxModel
+from lm_polygraph.estimators import *
+from lm_polygraph.estimators import SemanticEntropy, PTrue, ClaimConditionedProbability, Eccentricity, MeanConditionalPointwiseMutualInformation, SAR
 import prompt
+import pickle
+import torch
 
 if __name__ == "__main__":
     baseline_prompt_class = prompt.BaselinePrompts()
@@ -30,7 +39,7 @@ if __name__ == "__main__":
     )
     parser.add_argument("--save-loc", type=str, default="results/")
     parser.add_argument(
-        "--cache-dir", type=str, default="argumentative-llm/cache"
+        "--cache-dir", type=str, default="/vol/bitbucket/clarg/argumentative-llm/cache"
     )
     parser.add_argument(
         "--baselines", action=argparse.BooleanOptionalAction, default=False
@@ -63,6 +72,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--semantics", type=str, choices=["dfquad", "qe", "eb"], default="dfquad"
     )
+    # ISO Contribution: pass in the ue_method through the command line
+    parser.add_argument(
+        "--ue-method", type=str, choices=["semantic_entropy", "eccentricity"], default=None)
     args = parser.parse_args()
 
     print("Loading model...")
@@ -74,6 +86,7 @@ if __name__ == "__main__":
         llm_manager = HuggingFaceLlmManager(
             model_name=args.model_name,
             quantization=args.quantization,
+            cache_dir=args.cache_dir
         )
     generation_args = {
         "temperature": args.temperature,
@@ -83,7 +96,36 @@ if __name__ == "__main__":
 
     print("Loading dataset...")
     dataset = load_from_disk(args.dataset_name)
+    
+    quantization_config = BitsAndBytesConfig(
+                load_in_4bit=True,
+                bnb_4bit_compute_dtype=torch.bfloat16,
+            )
+    model_name = args.model_name
+    cache_dir = args.cache_dir
+ 
+    transformers.logging.set_verbosity_error()   
+    depth = args.depth 
+    dataset_name = args.dataset_name
+    ue_method = args.ue_method
+    
+    # ISO Contribution: Loading in the model using the LM-Polygraph library
+    if "openai" in model_name:
+        model_name = model_name.split("openai/")[1]
+        openai_key = os.environ["OPENAI_KEY"]
+        model = BlackboxModel.from_openai(openai_key, model_name, device_map="cuda:1", quantization_config = quantization_config)
+    else:
+        model = WhiteboxModel.from_pretrained(model_name, device_map="cuda:1", quantization_config = quantization_config)
 
+    # ISO Contribution: Selecting and initializing the UQ method
+    if ue_method:
+        if ue_method == "semantic_entropy":
+            ue_method = SemanticEntropy()
+        elif ue_method == "eccentricity":
+            ue_method = Eccentricity()
+        else:
+            raise ValueError("The UQ method you passed in is not yet supported.")
+    
     if not args.baselines:
         if args.semantics == "qe":
             agg_f = grad.semantics.modular.SumAggregation()
@@ -99,8 +141,9 @@ if __name__ == "__main__":
             am_prompts = [args.am_prompt]
         if args.ue_prompt != "all":
             ue_prompts = [args.ue_prompt]
-
+        
         for am_prompt in am_prompts:
+
             for ue_prompt in ue_prompts:
                 print()
                 print()
@@ -110,23 +153,46 @@ if __name__ == "__main__":
                 generate_prompt_am = getattr(am_prompt_class, am_prompt)
                 generate_prompt_ue = getattr(ue_prompt_class, ue_prompt)
 
-                ue = UncertaintyEstimator(
+                base_score_gen = UncertaintyEstimator(
                     llm_manager=llm_manager,
                     generate_prompt=generate_prompt_ue,
                     verbal=args.verbal,
                     generation_args=generation_args,
                 )
+                
                 am = ArgumentMiner(
+                    generate_prompt_am=generate_prompt_am,
+                    generate_prompt_ue=generate_prompt_ue,
                     llm_manager=llm_manager,
-                    generate_prompt=generate_prompt_am,
                     depth=args.depth,
                     breadth=args.breadth,
                     generation_args=generation_args,
                 )
-
+                
                 results = []
+                # ISO Contribution: For min-max linear normalization, retrieve the min and max of the 
+                # normalization pass, which are stored in pkl files
+                if ue_method == "semantic_entropy":
+                    with open("min_max_vals_se.pkl", "rb") as f:
+                        data = pickle.load(f)
+                        min_val = data["min_val"]
+                        max_val = data["max_val"]
+                elif ue_method == "eccentricity":
+                    with open("min_max_vals_ecc.pkl", "rb") as f:
+                        data = pickle.load(f)
+                        min_val = data["min_val"]
+                        max_val = data["max_val"]
+                else:
+                    min_val = None 
+                    max_val = None
+                    
+                    
                 for data in dataset:
-                    t_base, t_estimated = am.generate_arguments(data["claim"], ue)
+                    # Call the LM-Polygraph version of the function if there is a ue_method passed into the command line
+                    if ue_method:
+                        t_base, t_estimated = am.generate_arguments_lm_polygraph(data["claim"], model, ue_method, base_score_gen, min_val, max_val)
+                    else:
+                        t_base, t_estimated = am.generate_arguments(data["claim"], base_score_gen)
                     grad.algorithms.computeStrengthValues(t_base, agg_f, inf_f)
                     grad.algorithms.computeStrengthValues(t_estimated, agg_f, inf_f)
                     results.append(
@@ -142,6 +208,10 @@ if __name__ == "__main__":
                             "valid": data["valid"],
                         }
                     )
+             
+                    torch.cuda.empty_cache()
+                    
+                    
 
                 print("Evaluating...")
                 bag_types = ["base", "estimated"]
