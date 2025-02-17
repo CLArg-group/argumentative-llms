@@ -172,20 +172,19 @@ if __name__ == "__main__":
                 results = []
                 # ISO Contribution: For min-max linear normalization, retrieve the min and max of the 
                 # normalization pass, which are stored in pkl files
-                if ue_method == "semantic_entropy":
-                    with open("min_max_vals_se.pkl", "rb") as f:
+                if args.ue_method == "semantic_entropy":
+                    with open("min_max_se.pkl", "rb") as f:
                         data = pickle.load(f)
                         min_val = data["min_val"]
                         max_val = data["max_val"]
-                elif ue_method == "eccentricity":
-                    with open("min_max_vals_ecc.pkl", "rb") as f:
+                elif args.ue_method == "eccentricity":
+                    with open("min_max_ecc.pkl", "rb") as f:
                         data = pickle.load(f)
                         min_val = data["min_val"]
                         max_val = data["max_val"]
                 else:
                     min_val = None 
                     max_val = None
-                    
                     
                 for data in dataset:
                     # Call the LM-Polygraph version of the function if there is a ue_method passed into the command line
