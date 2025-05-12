@@ -1,5 +1,5 @@
 # Argumentative LLMs
-This is the oficial code repository for the paper "[Argumentative Large Language Models for Explainable and Contestable Decision-Making](https://arxiv.org/abs/2405.02079)". Argumentative LLMs (ArgLLMs) augment large language models with a formal reasoning layer based on computational argumentation. This approach enables ArgLLMs to generate structured and faithful explanations of their reasoning, while also allowing users to challenge and correct any identified issues.
+This is the oficial code repository for the paper "[Argumentative Large Language Models for Explainable and Contestable Claim Verification](https://arxiv.org/abs/2405.02079)". Argumentative LLMs (ArgLLMs) augment large language models with a formal reasoning layer based on computational argumentation. This approach enables ArgLLMs to generate structured and faithful explanations of their reasoning, while also allowing users to challenge and correct any identified issues.
 
 ## Getting Started
 To run the main experiments, please follow these steps:
