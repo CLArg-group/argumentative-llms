@@ -74,6 +74,7 @@ if __name__ == "__main__":
         llm_manager = HuggingFaceLlmManager(
             model_name=args.model_name,
             quantization=args.quantization,
+            cache_dir=args.cache_dir,
         )
     generation_args = {
         "temperature": args.temperature,
