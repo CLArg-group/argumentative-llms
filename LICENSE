@@ -2,6 +2,10 @@ License
 
 The following license governs the use of the Argumentative LLMs software in academic and educational environments. Commercial use is not permitted by this license and requires a separate license from the copyright holders.
 
+Copyright (c) 2024, authors of the "Argumentative Large Language Models for Explainable and Contestable Claim Verification" paper.
+
+Third-party contributions to the Argumentative LLMs software repository (https://github.com/CLArg-group/argumentative-llms) are also subject to the Contributor Terms published in this repository (https://github.com/CLArg-group/argumentative-llms/blob/main/CONTRIBUTING.md).
+
 ARGUMENTATIVE LLMS ACADEMIC PUBLIC LICENSE
 
 Preamble
@@ -12,6 +16,8 @@ Preamble
 
 TERMS AND CONDITIONS FOR USE, COPYING, DISTRIBUTION AND MODIFICATION
 Definitions
+
+“Copyright Holders” means the authors of the "Argumentative Large Language Models for Explainable and Contestable Claim Verification" paper.
 
 “Program” means a copy of Argumentative LLMs software, which is said to be distributed under this Argumentative LLMs Academic Public License.
 
