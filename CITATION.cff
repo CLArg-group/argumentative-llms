@@ -1,0 +1,52 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the original paper."
+authors:
+- family-names: "Freedman"
+  given-names: "Gabriel"
+- family-names: "Dejl"
+  given-names: "Adam"
+  orcid: "https://orcid.org/0009-0006-0274-4160"
+- family-names: "Gorur"
+  given-names: "Deniz"
+  orcid: "https://orcid.org/0009-0008-8976-8919"
+- family-names: "Yin"
+  given-names: "Xiang"
+  orcid: "https://orcid.org/0000-0002-6096-9943"
+- family-names: "Rago"
+  given-names: "Antonio"
+  orcid: "https://orcid.org/0000-0001-5323-7739"
+- family-names: "Toni"
+  given-names: "Francesca"
+  orcid: "https://orcid.org/0000-0001-8194-1459"
+preferred-citation:
+  authors:
+    - family-names: "Freedman"
+      given-names: "Gabriel"
+    - family-names: "Dejl"
+      given-names: "Adam"
+      orcid: "https://orcid.org/0009-0006-0274-4160"
+    - family-names: "Gorur"
+      given-names: "Deniz"
+      orcid: "https://orcid.org/0009-0008-8976-8919"
+    - family-names: "Yin"
+      given-names: "Xiang"
+      orcid: "https://orcid.org/0000-0002-6096-9943"
+    - family-names: "Rago"
+      given-names: "Antonio"
+      orcid: "https://orcid.org/0000-0001-5323-7739"
+    - family-names: "Toni"
+      given-names: "Francesca"
+      orcid: "https://orcid.org/0000-0001-8194-1459"
+  title: "Argumentative Large Language Models for Explainable and Contestable Claim Verification"
+  type: article
+  doi: "10.1609/aaai.v39i14.33637"
+  url: "https://ojs.aaai.org/index.php/AAAI/article/view/33637"
+  volume: 39
+  number: 14
+  journal: "Proceedings of the AAAI Conference on Artificial Intelligence"
+  month: 4
+  year: 2025
+  pages: "14930-14939"
+title: "Argumentative LLMs"
+date-released: 2024-12-15
+url: "https://github.com/CLArg-group/argumentative-llms"
