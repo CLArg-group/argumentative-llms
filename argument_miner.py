@@ -79,8 +79,6 @@ class ArgumentMiner:
                             name=f"{p.name}←d{d}b{b}",
                             base_score_generator=base_score_generator
                         )
-                        print(f"Support for {p.name}: {s.arg}")
-                        print(f"Attack for {p.name}: {a.arg}")
                         
                         if s.arg != "N/A":
                             new_layer.append(s)
