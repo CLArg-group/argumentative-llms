@@ -26,7 +26,7 @@ if __name__ == "__main__":
         "--model-name", type=str, default="mistralai/Mistral-7B-Instruct-v0.2"
     )
     parser.add_argument(
-        "--dataset-name", type=str, default="Datasets/COLIEE/Prompt_Small_Version"
+        "--dataset-name", type=str, default="TruthfulQA/Prompt"
     )
     parser.add_argument("--save-loc", type=str, default="results/")
     parser.add_argument(
