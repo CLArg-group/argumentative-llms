@@ -48,8 +48,6 @@ class ArgumentMiner:
         self.argument_tree.add_attack(a, parent)
         return s, a
 
-    """Generates arguments for and against a statement, up to the given breadth and depth."""
-
     def generate_arguments(self, statement, base_score_generator):
         """Generates arguments for and against a statement, up to the given breadth and depth."""
         self.argument_tree = grad.BAG()
@@ -76,31 +74,25 @@ class ArgumentMiner:
             else:
                 for p in previous_layer:
                     for b in range(1, self.breadth + 1):
-                        try:
-                            s, a = self.generate_args_for_parent(
-                                parent=p,
-                                name=f"{p.name}←d{d}b{b}",
-                                base_score_generator=base_score_generator
-                            )
-                            print(f"Support for {p.name}: {s.arg}")
-                            print(f"Attack for {p.name}: {a.arg}")
-                            
-                            if s.arg != "N/A":
-                                new_layer.append(s)
-                            if a.arg != "N/A":
-                                new_layer.append(a)
-                        except Exception as e:
-                            print(f"Error generating arguments for {p.name}: {e}")
-                            continue
+                        s, a = self.generate_args_for_parent(
+                            parent=p,
+                            name=f"{p.name}←d{d}b{b}",
+                            base_score_generator=base_score_generator
+                        )
+                        print(f"Support for {p.name}: {s.arg}")
+                        print(f"Attack for {p.name}: {a.arg}")
+                        
+                        if s.arg != "N/A":
+                            new_layer.append(s)
+                        if a.arg != "N/A":
+                            new_layer.append(a)
 
             previous_layer = new_layer
 
         topic_base_score_bag = deepcopy(self.argument_tree)
-        
-        if topic.name in topic_base_score_bag.arguments:
-            topic_base_score_bag.arguments[topic.name].reset_initial_weight(
-                topic_base_score
-            )
+        topic_base_score_bag.arguments[topic.name].reset_initial_weight(
+            topic_base_score
+        )
 
         return self.argument_tree, topic_base_score_bag
 
