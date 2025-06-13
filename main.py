@@ -26,7 +26,7 @@ if __name__ == "__main__":
         "--model-name", type=str, default="mistralai/Mistral-7B-Instruct-v0.2"
     )
     parser.add_argument(
-        "--dataset-name", type=str, default="Datasets/TruthfulQA/Prompt"
+        "--dataset-name", type=str, default="Datasets/COLIEE/Prompt_Small_Version"
     )
     parser.add_argument("--save-loc", type=str, default="results/")
     parser.add_argument(
@@ -43,7 +43,7 @@ if __name__ == "__main__":
     parser.add_argument("--max-new-tokens", type=int, default=128)
     parser.add_argument("--top-p", type=float, default=0.95)
     parser.add_argument(
-        "--quantization", type=str, default="8bit", choices=["4bit", "8bit", "none"]
+        "--quantization", type=str, default="none", choices=["4bit", "8bit", "none"]
     )
     # generation related args
     parser.add_argument(
@@ -151,7 +151,7 @@ if __name__ == "__main__":
                     "accuracy": (accuracy_score, False),
                     "f1": (f1_score, False),
                     "brier": (brier_score_loss, True),
-                    "auc": (roc_auc_score, True),
+                    # "auc": (roc_auc_score, True),
                 }
 
                 probabilities = defaultdict(list)
