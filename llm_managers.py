@@ -29,15 +29,15 @@ class LlmManager(ABC):
         repetition_penalty=1.0,
     ):
         pass
-
-
+    
 class HuggingFaceLlmManager(LlmManager):
     def __init__(
         self,
         model_name,
-        cache_dir="argumentative-llm/cache",
+        preloaded = None,
+        cache_dir="argumentative-llms/cache",
         model_args=None,
-        input_device="cuda:0",
+        input_device="cuda:1",
         quantization="4bit",
     ):
         super().__init__()
@@ -55,16 +55,19 @@ class HuggingFaceLlmManager(LlmManager):
         else:
             raise ValueError(f"Invalid quantization value {quantization}")
 
-        self.pipeline = transformers.pipeline(
-            "text-generation",
-            model=model_name,
-            device_map="auto",
-            model_kwargs={
-                "torch_dtype": "auto",
-                "quantization_config": quantization_config,
-                "cache_dir": cache_dir,
-            },
-        )
+        if preloaded is not None:
+            self.pipeline = preloaded
+        else:
+            self.pipeline = transformers.pipeline(
+                "text-generation",
+                model=model_name,
+                device_map=input_device,
+                model_kwargs={
+                    "torch_dtype": "auto",
+                    "quantization_config": quantization_config,
+                    "cache_dir": cache_dir,
+                },
+            )
         self.input_device = input_device
 
     def chat_completion(
@@ -101,15 +104,16 @@ class HuggingFaceLlmManager(LlmManager):
             )
         else:
             prefix_allowed_tokens_fn = None
+            
         response = self.pipeline(
-            prompt,
-            max_new_tokens=max_new_tokens,
-            do_sample=do_sample,
-            temperature=temperature,
-            top_p=top_p,
-            repetition_penalty=repetition_penalty,
-            prefix_allowed_tokens_fn=prefix_allowed_tokens_fn,
-        )[0]["generated_text"]
+                prompt,
+                max_new_tokens=max_new_tokens,
+                do_sample=do_sample,
+                temperature=temperature,
+                top_p=top_p,
+                repetition_penalty=repetition_penalty,
+                prefix_allowed_tokens_fn=prefix_allowed_tokens_fn,
+            )[0]["generated_text"]
 
         if print_result:
             print(response, flush=True)
